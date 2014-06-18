@@ -1,4 +1,3 @@
-require 'pg'
 require "pry-debugger"
 class TM::Task
   attr_reader :project_id, :id, :priority,

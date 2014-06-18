@@ -1,4 +1,4 @@
-require 'pg'
+
 require "pry-debugger"
 require_relative "./lib/task-manager.rb"
 

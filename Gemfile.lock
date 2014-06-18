@@ -11,7 +11,6 @@ GEM
     debugger-ruby_core_source (1.3.5)
     diff-lcs (1.2.5)
     method_source (0.8.2)
-    pg (0.17.1)
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -33,6 +32,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  pg
   pry-debugger (~> 0.2.2)
   rspec (~> 2.14.1)

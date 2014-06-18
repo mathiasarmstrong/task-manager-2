@@ -1,5 +1,3 @@
-require 'pg'
-    db = PG.connect(host: 'localhost', dbname: 'task-manager-db')
 
 class TM::Project
   attr_reader :name, :id, :tasks
@@ -7,10 +5,9 @@ class TM::Project
   @@library=[]
 
   def initialize(name)
-    db.exec()
     @name = name
-    # @@library << self
-    # @id = @@library.length - 1
+    @@library << self
+    @id = @@library.length - 1
     @tasks = []
   end
 
@@ -37,20 +34,5 @@ class TM::Project
     incomplete = @tasks.select{|task| !task.task_is_completed}
     incomplete.sort!{ |task1, task2| task1.creation_date <=> task2.creation_date }
     incomplete.sort!{ |task1, task2| task1.priority <=> task2.priority }
-  end
-end
-
-class TM::User
-  def initialize(name)
-    @id = db.exec( "INSERT INTO users( #{ name } )
-    VALUES ( 'Sally', 'sally@computeruser.com' )
-    returning id;" )
-    @name = name
-  end
-
-  def name
-    db.exec("SELECT * FROM users WHERE id=#{@id}")
-  end
-  def id
   end
 end

@@ -216,7 +216,7 @@ module TM
 #--------task methods-----------------------------
 
     def add_task( description, priority, pid, eid = nil )
-      unless TM::Project.select_project( pid ).nil?
+      unless TM::Project.select( pid ).nil?
         command = <<-SQL
           INSERT INTO tasks ( description, priority_number, project_id, employee_id, creation_date, completed)
           VALUES ( '#{ description }', '#{ priority }', '#{ pid }', '#{ eid }', '#{Time.now}', 'false')

@@ -87,7 +87,7 @@ describe 'Project' do
 
       it 'also returns tasks in order of creation date' do
         task = TM::Task.create( "new task", 1, test.id , tom.id )
-        Time.stub(:now).and_return(Time.new(2013,5,1,8,30))
+        Time.stub( :now ).and_return( Time.new( 2013,5,1,8,30 ) )
         task1 = TM::Task.create( "new task", 1, test.id , tom.id )
         task2 = TM::Task.create( "new task", 300, test.id , tom.id )
         task3 = TM::Task.create( "new task", 1, test.id , tom.id )
@@ -108,7 +108,7 @@ describe 'Project' do
     context 'when called with no tasks' do
 
       it 'returns an empty array' do
-        expect(TM::Project.list_incomplete_tasks( test.id ) ).to eq([])
+        expect( TM::Project.list_incomplete_tasks( test.id ) ).to eq( [] )
       end
     end
 
@@ -165,16 +165,16 @@ describe 'Project' do
         expect( prior ).to be_false
       end
 
-      xit 'and if they have the same priority then the older of the two gets gets priority' do
-        task = tom.create_new_task( "new task", 1, test.id )
-        task1 = tom.create_new_task( "new task2", 1, test.id )
-        task2 = tom.create_new_task( "new task3", 300, test.id )
-        Time.stub( :now ).and_return( Time.new( 2013,5,1,8,30 ) )
-        task3 = tom.create_new_task( "new task4", 1, test.id )
-        task4 = tom.create_new_task( "new task5", 3, test.id )
-        tom.complete_task( task.id )
-        tom.complete_task( task2.id )
-        tasks = test.list_incomplete_tasks
+      it 'and if they have the same priority then the older of the two gets gets priority' do
+        task = TM::Task.create( "new task", 1, test.id , tom.id )
+        task1 = TM::Task.create( "new task", 1, test.id , tom.id )
+        task2 = TM::Task.create( "new task", 300, test.id , tom.id )
+        Time.stub(:now).and_return(Time.new(2013,5,1,8,30))
+        task3 = TM::Task.create( "new task", 1, test.id , tom.id )
+        task4 = TM::Task.create( "new task", 3, test.id , tom.id )
+        TM::Task.mark( task.id )
+        TM::Task.mark( task2.id )
+        tasks = TM::Project.list_incomplete_tasks(test.id)
         prior = tasks[0].creation_date < tasks[1].creation_date
         expect( prior ).to be_true
       end

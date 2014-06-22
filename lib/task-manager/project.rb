@@ -1,38 +1,55 @@
 
 class TM::Project
-  attr_reader :name, :id, :tasks
+  attr_reader :name, :id
 
-  @@library=[]
 
-  def initialize(name)
+  def initialize( name, id )
     @name = name
-    @@library << self
-    @id = @@library.length - 1
-    @tasks = []
+    @id = id
   end
 
-  def self.library
-    @@library
+#------task methods----------------
+
+  #   tasks = tasks.sort do |task1,task2|
+  #     comp = ( task1.priority <=> task2.priority )
+  #     comp == 0 ? ( task1.creation_date <=> task2.creation_date ) : comp
+  #   end
+  # end
+
+#--------project methods----------
+
+  def self.create( name )
+    TM.orm.add_project( name )
   end
 
-  def add_task(task_description,task_priority)
-    @tasks<<TM::Task.new(@id, task_description, task_priority, @tasks.length)
-    # we return @tasks.length-1 for purposes of setting the task id
-    @tasks.length - 1
+  def self.list
+    TM.orm.list_projects
   end
 
-  def complete_task(task_id)
-    @tasks[task_id].change_status
+  def self.list_complete_tasks( pid )
+    all_tasks = TM::Task.list_by_project( pid )
+    tasks = all_tasks.select{ |task| task.completed == true }.sort_by{|task| task.creation_date}
   end
 
-  def list_complete_tasks
-    complete = @tasks.select{|task| task.task_is_completed}
-    complete.sort!{ |task1, task2| task1.creation_date <=> task2.creation_date }
+  def self.list_incomplete_tasks( pid )
+    all_tasks = TM::Task.list_by_project( pid )
+    tasks = all_tasks.select{ |task| task.completed == false }
+    tasks.sort do |task1,task2|
+      comp = task1.priority<=>task2.priority
+      if comp ==0 ? task1.creation_date <=> task2.creation_date : comp
+    end
   end
 
-  def list_incomplete_tasks
-    incomplete = @tasks.select{|task| !task.task_is_completed}
-    incomplete.sort!{ |task1, task2| task1.creation_date <=> task2.creation_date }
-    incomplete.sort!{ |task1, task2| task1.priority <=> task2.priority }
+  def self.select( pid )
+    TM.orm.select_project( pid )
+  end
+
+  def self.add_employee ( pid, eid )
+    TM.orm.add_employee_to_project( pid, eid ) unless select( pid ).nil?
+  end
+
+  def self.list_by_employee( eid )
+    TM.orm.list_projects_by_employee( eid )
   end
 end
+

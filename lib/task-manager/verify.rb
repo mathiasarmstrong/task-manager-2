@@ -17,9 +17,14 @@ def id_verify( command, type, place=1 )
   end
 
   if command[place]!='exit'
-    command[place].is_number? ? command[place].to_i : id_verify(command[0])
+    if command[place].is_number?
+      command[place] = command[place].to_i
+    else
+      command = id_verify(command, type, place)
+    end
+    return command
   else
-    -1
+    []
   end
 end
 
@@ -46,22 +51,22 @@ def employee_verify( command )
         puts "please enter the employee name"
         command[1] = gets.chomp
       end
-      emp_create( command[1..-1] )
+      emp_create( command[1..-1].join(' ') )
 
     when 'show'
-      eid = id_verify(command, 'project id')
-      show( eid )
+      command = id_verify(command, 'project id')
+      emp_show( command[1] )
 
     when 'details'
-      eid = id_verify(command, 'project id')
-      details( eid )
+      command = id_verify(command, 'project id')
+      emp_details( command[1] )
 
     when 'history'
-      eid = id_verify(command, 'project id')
-      history( eid )
+      command = id_verify(command, 'project id')
+      emp_history( command[1] )
 
     when 'exit'
-      exit
+      emp_show(nil)
 
   else
     command[1..-1] = nil
@@ -70,11 +75,12 @@ def employee_verify( command )
 end
 
 def task_verify( command )
+
   if command[1].nil?
     puts "which task command would you would like to use
-      task create PID PRIORITY DESC - Add a new task to project PID
-      task assign TID EID - Assign task to employee
-      task mark TID - Mark task TID as complete"
+      create PID PRIORITY DESC - Add a new task to project PID
+      assign TID EID - Assign task to employee
+      mark TID - Mark task TID as complete"
 
     command = separate(gets.chomp)
   end
@@ -89,100 +95,92 @@ def task_verify( command )
         command[1..-1] = gets.chomp
         command = command[0]+command[1].split{ /' '/ }
       end
-       id_verify( command[1], 'Project id' )
-       id_verify( command[2], 'task priority', 2 )
+      command = id_verify( command, 'Project id' )
+      command = id_verify( command, 'Task priority', 2 )
 
+      task_create( command[1], command[2], command[3..-1] )
 
+    when 'assign'
+      if command[1].nil? || command[2].nil?
+        puts "please enter the Task id and the Employee id"
+        command[1..-1] = gets.chomp
+        command = command[0]+command[1].split{ /' '/ }
+      end
+      command = id_verify( command, 'Task id' )
+      command = id_verify( command, 'Employee id', 2 )
 
+      task_assign( command[1], command[2])
 
-
-      task_create( command[1..-1] )
-
-    when 'show'
-      tid = id_verify(command, 'task')
-      show( tid )
-
-    when 'details'
-      tid = id_verify(command, 'project id')
-      details( tid )
-
-    when 'history'
-      tid = id_verify(command, 'project id')
-      history( tid )
+    when 'mark'
+      command = id_verify(command, 'task id')
+      task_mark( command[1] )
 
     when 'exit'
-      exit
+      task_assign(nil)
 
   else
     command[1..-1] = nil
-    employee_verify(command)
-end
-end
-
-def project_verify
+    task_verify(command)
+  end
 end
 
-#these methods are to test and convert user entries
-    def change_to_string(command_array,position_of_first_element=1,position_of_last_element=-1)
-      command_array[position_of_first_element..position_of_last_element].join(' ')
-    end
+def project_verify( command )
 
-    def change_to_number(command_array,position_of_number_to_convert=1)
-      command_array[position_of_number_to_convert].to_i
-    end
+  if command[1].nil?
+    puts "which project command would you would like to use
+      list - List all projects
+      create NAME - Create a new project
+      show PID - Show remaining tasks for project PID
+      history PID - Show completed tasks for project PID
+      employees PID - Show employees participating in this project
+      recruit PID EID - Adds employee EID to participate in project PID"
 
-    def check_number(command_array,position_of_number_to_convert=1)
-      command_array[position_of_number_to_convert].is_number?
-    end
+        command = separate(gets.chomp)
+  end
 
-    def check_error(command_array,location=1)
-      command_array[location].nil?
-    end
+  command.shift if command[0]=='project'
 
-    def check_projects(project_id)
-      !TM::Project.library[project_id].nil?
-    end
+  case command[0]
+  when list
+      project_list
 
-    def check_tasks(project_id,task_id)
-      !TM::Project.library[project_id].tasks[task_id].nil?
+  when 'create'
+    if command[1].nil?
+      puts "please enter the project name"
+      command[1] = gets.chomp
     end
+    project_create( command[1..-1].join(' ') )
 
-    def throw_error
-      multi_word_command_selector('error',"error")
-    end
-#these methods tests the vaildity with regard to he projects
+  when 'show'
+    command = id_verify(command, 'project id')
+    project_show( command[1] )
 
-def multi_word_command_selector(command_array,project_id)
-    case command_array[0]
-      when "show"
-        show(project_id) #shows remaining tasks for a project
-      when "history"
-        history(project_id)
-      when "add" #adds a task to a project
-        if (!check_error(command_array,2) && check_number(command_array,2))
-            task_priority = change_to_number(command_array, 2)
-            task_description = change_to_string(command_array, 3)
-          if !check_error(command_array,3) && check_projects(project_id)
-            add(project_id,task_priority,task_description)
-          else
-            throw_error
-          end
-        else
-          multi_word_command_selector('error','error')
-        end
-      when "mark"
-        if !check_error(command_array,2)&&check_number(command_array,2)
-            task_id = change_to_number(command_array, 2)
-          if check_projects(project_id) && check_tasks(project_id,task_id)
-            mark(project_id, task_id)
-          else
-            throw_error
-          end
-        else
-          throw_error
-        end
-      else
-        puts "That was not a valid command."
-        help
+  when 'history'
+    command = id_verify(command, 'project id')
+    project_history( command[1] )
+
+  when 'employees'
+    command = id_verify(command, 'project id')
+    project_employees( command[1] )
+
+  when 'recruit'
+    if command[1].nil? || command[2].nil?
+        puts "please enter the Project id and the Employee id"
+        command[1..-1] = gets.chomp
+        command = command[0]+command[1].split{ /' '/ }
       end
-    end
+      command = id_verify( command, 'Project id' )
+      command = id_verify( command, 'Employee id', 2 )
+
+      project_recruit( command[1], command[2] )
+
+  when 'exit'
+      project_show(nil)
+
+  else
+
+    command[1..-1] = nil
+    project_verify(command)
+  end
+end
+

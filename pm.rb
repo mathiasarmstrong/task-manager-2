@@ -24,7 +24,7 @@ class TerminalClient
       help
 
     when "project"
-      command = verify_project( command )
+       verify_project( command )
 
     when "emp"
       command = verify_emp( command )

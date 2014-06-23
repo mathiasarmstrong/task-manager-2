@@ -7,7 +7,6 @@ module TM
 
     def initialize
       @db_adaptor = PG.connect( host: 'localhost', dbname: 'task-manager-db' )
-      # @db_adapter.set_error_verbosity('PQERRORS_TERSE')
     end
 
 #--------database initialization----------
@@ -186,11 +185,13 @@ module TM
     end
 
     def add_employee_to_project( pid, eid )
-      command = <<-SQL
-        INSERT INTO join_table ( project_id, employee_id )
-        VALUES ( '#{ pid }', '#{ eid }' );
-      SQL
-      db_adaptor.exec(command)
+      unless TM::Project.select( pid ).nil?
+        command = <<-SQL
+          INSERT INTO join_table ( project_id, employee_id )
+          VALUES ( '#{ pid }', '#{ eid }' );
+        SQL
+        db_adaptor.exec(command)
+      end
       return nil
     end
 

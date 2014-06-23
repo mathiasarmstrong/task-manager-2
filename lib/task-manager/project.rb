@@ -1,4 +1,3 @@
-
 class TM::Project
   attr_reader :name, :id
 
@@ -18,12 +17,12 @@ class TM::Project
     TM.orm.list_projects
   end
 
-  def self.list_complete_tasks( pid )
+  def self.complete( pid )
     all_tasks = TM::Task.list_by_project( pid )
     tasks = all_tasks.select{ |task| task.completed == true }.sort_by{|task| task.creation_date}
   end
 
-  def self.list_incomplete_tasks( pid )
+  def self.incomplete( pid )
     all_tasks = TM::Task.list_by_project( pid )
     tasks = all_tasks.select{ |task| task.completed == false }
     tasks = tasks.sort do |task1,task2|

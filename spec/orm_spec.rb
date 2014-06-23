@@ -33,7 +33,7 @@ describe 'ORM' do
   describe '#add_employee' do
 
    it 'creates a new employee with name and returns a employee instance' do
-      expect( TM.orm.add_employee( 'Tom' ) ).to be_a( Employee )
+      expect( TM.orm.add_employee( 'Tom' ) ).to be_a( TM::Employee )
     end
   end
 

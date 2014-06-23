@@ -48,7 +48,7 @@ describe 'Project' do
     context 'when called with no tasks' do
 
       it 'returns an empty array' do
-        expect( TM::Project.list_complete_tasks( test.id ).length ).to eq( 0 )
+        expect( TM::Project.complete( test.id ).length ).to eq( 0 )
       end
     end
 
@@ -57,7 +57,7 @@ describe 'Project' do
 
       it 'returns an empty array' do
         TM::Task.create( "new task", 1, test.id , tom.id )
-        expect( TM::Project.list_complete_tasks( test.id ).length ).to eq( 0 )
+        expect( TM::Project.complete( test.id ).length ).to eq( 0 )
       end
     end
 
@@ -67,7 +67,7 @@ describe 'Project' do
       it 'returns an array containing that task' do
         task = TM::Task.create( "new task", 1, test.id , tom.id )
         TM::Task.mark( task.id )
-        expect( TM::Project.list_complete_tasks( test.id ).length ).to eq( 1 )
+        expect( TM::Project.complete( test.id ).length ).to eq( 1 )
       end
     end
 
@@ -82,7 +82,7 @@ describe 'Project' do
         task4 = TM::Task.create( "new task", 3, test.id , tom.id )
         TM::Task.mark( task.id )
         TM::Task.mark( task2.id )
-        expect( TM::Project.list_complete_tasks( test.id ).length ).to eq( 2 )
+        expect( TM::Project.complete( test.id ).length ).to eq( 2 )
       end
 
       it 'also returns tasks in order of creation date' do
@@ -94,7 +94,7 @@ describe 'Project' do
         task4 = TM::Task.create( "new task", 3, test.id , tom.id )
         TM::Task.mark( task.id )
         TM::Task.mark( task2.id )
-        tasks = TM::Project.list_complete_tasks( test.id )
+        tasks = TM::Project.complete( test.id )
         expect( tasks[0].id ).to eq( task2.id )
         confirm_date_order = tasks[0].creation_date < tasks[1].creation_date
         expect( confirm_date_order ) .to be_true
@@ -103,12 +103,12 @@ describe 'Project' do
   end
 
 
-  describe '#list_incomplete_tasks' do
+  describe '#incomplete' do
 
     context 'when called with no tasks' do
 
       it 'returns an empty array' do
-        expect( TM::Project.list_incomplete_tasks( test.id ) ).to eq( [] )
+        expect( TM::Project.incomplete( test.id ) ).to eq( [] )
       end
     end
 
@@ -117,7 +117,7 @@ describe 'Project' do
 
       it 'returns an array containing that task' do
         task1 = TM::Task.create( "new task2", 1, test.id, tom.id )
-        expect(TM::Project.list_incomplete_tasks( test.id ).length).to eq(1)
+        expect(TM::Project.incomplete( test.id ).length).to eq(1)
       end
     end
 
@@ -127,7 +127,7 @@ describe 'Project' do
       it 'returns an empty array' do
         task1 = TM::Task.create( "new task2", 1, test.id, tom.id )
         TM::Task.mark( task1.id )
-        expect( TM::Project.list_incomplete_tasks( test.id ) ).to eq( [] )
+        expect( TM::Project.incomplete( test.id ) ).to eq( [] )
       end
     end
 
@@ -143,7 +143,7 @@ describe 'Project' do
         task4 = TM::Task.create( "new task", 3, test.id , tom.id )
         TM::Task.mark( task.id )
         TM::Task.mark( task2.id )
-        tasks = TM::Project.list_incomplete_tasks( test.id )
+        tasks = TM::Project.incomplete( test.id )
         expect( tasks.length ).to eq( 3 )
       end
 
@@ -156,7 +156,7 @@ describe 'Project' do
         task4 = TM::Task.create( "new task", 3, test.id , tom.id )
         TM::Task.mark( task.id )
         TM::Task.mark( task2.id )
-        tasks = TM::Project.list_incomplete_tasks( test.id )
+        tasks = TM::Project.incomplete( test.id )
         prior = tasks[0].priority < tasks[1].priority
         expect( prior ).to be_true
         prior = tasks[-1].priority < tasks[0].priority
@@ -174,7 +174,7 @@ describe 'Project' do
         task4 = TM::Task.create( "new task", 3, test.id , tom.id )
         TM::Task.mark( task.id )
         TM::Task.mark( task2.id )
-        tasks = TM::Project.list_incomplete_tasks(test.id)
+        tasks = TM::Project.incomplete(test.id)
         prior = tasks[0].creation_date < tasks[1].creation_date
         expect( prior ).to be_true
       end

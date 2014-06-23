@@ -9,5 +9,5 @@ require_relative 'task-manager/task.rb'
 require_relative 'task-manager/project.rb'
 require_relative 'task-manager/employee.rb'
 require_relative 'task-manager/orm.rb'
-require_relative 'task-manager/commands.rb'
+# require_relative 'task-manager/commands.rb'
 

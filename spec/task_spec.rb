@@ -20,9 +20,9 @@ describe 'Task' do
     expect( TM::Task ).to be_a( Class )
   end
 
-    let( :tom ){ TM.orm.add_employee( 'tom' ) }
-    let( :test ){ TM.orm.add_project( 'first', tom.id ) }
-    let( :task ){ tom.create_new_task("new task", 1, test.id ) }
+    let( :tom ){ TM::Employee.create( 'tom' ) }
+    let( :test ){ TM::Project.create( 'first' ) }
+    let( :task ){ TM::Task.create("new task", 1, test.id, tom.id ) }
 
 #--------------task methods--------------------------
 
@@ -52,7 +52,6 @@ describe 'Task' do
 
       it 'has a creation date' do
         expect(Time.parse(task.creation_date)).to be_a(Time)
-        #stub time to make sure its st properly
       end
     end
   end

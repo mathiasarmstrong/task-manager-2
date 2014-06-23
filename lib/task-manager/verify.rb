@@ -4,39 +4,37 @@
     end
   end
 
-def convert_to_number(command)
-end
 
 def separate(user_input)
   user_input.split{/' '/}
 end
 
-def eid_verify(command)
+def id_verify( command, type, place=1 )
 
-  if command[1].nil?
-    puts "please enter the employee id number or exit"
-    command[1] = gets.chomp
+  if command[place].nil?
+    puts "please enter the #{type} number or exit"
+    command[place] = gets.chomp
   end
 
-  if command[1]!='exit'
-    command[1].is_number? ? command[1].to_i : eid_verify(command[0])
+  if command[place]!='exit'
+    command[place].is_number? ? command[place].to_i : id_verify(command[0])
   else
     -1
   end
 end
 
-def project_verify( command )
+def employee_verify( command )
   if command[1].nil?
-    puts "which employee command you would like to use
+    puts "which employee command would you would like to use
       list - List all employees
       create NAME - Create a new employee
       show EID - Show employee EID and all participating projects
       details EID - Show all remaining tasks assigned to employee EID,
                         along with the project name next to each task
       history EID - Show completed tasks for employee with id=EID"
-
     command = separate(gets.chomp)
   end
+
   command.shift if command[0]=='project'
 
   case command[0]
@@ -51,25 +49,77 @@ def project_verify( command )
       emp_create( command[1..-1] )
 
     when 'show'
-      eid = eid_verify(command)
+      eid = id_verify(command, 'project id')
       show( eid )
 
     when 'details'
-      eid = eid_verify(command)
+      eid = id_verify(command, 'project id')
       details( eid )
 
     when 'history'
-      eid = eid_verify(command)
+      eid = id_verify(command, 'project id')
       history( eid )
 
+    when 'exit'
+      exit
+
   else
-
+    command[1..-1] = nil
+    employee_verify(command)
+  end
 end
 
-def task_verify
+def task_verify( command )
+  if command[1].nil?
+    puts "which task command would you would like to use
+      task create PID PRIORITY DESC - Add a new task to project PID
+      task assign TID EID - Assign task to employee
+      task mark TID - Mark task TID as complete"
+
+    command = separate(gets.chomp)
+  end
+
+  command.shift if command[0]=='task'
+
+  case command[0]
+
+    when 'create'
+      if command[1].nil? || command[2].nil? || command[3].nil?
+        puts "please enter the Project id, priority and the description"
+        command[1..-1] = gets.chomp
+        command = command[0]+command[1].split{ /' '/ }
+      end
+       id_verify( command[1], 'Project id' )
+       id_verify( command[2], 'task priority', 2 )
+
+
+
+
+
+      task_create( command[1..-1] )
+
+    when 'show'
+      tid = id_verify(command, 'task')
+      show( tid )
+
+    when 'details'
+      tid = id_verify(command, 'project id')
+      details( tid )
+
+    when 'history'
+      tid = id_verify(command, 'project id')
+      history( tid )
+
+    when 'exit'
+      exit
+
+  else
+    command[1..-1] = nil
+    employee_verify(command)
+end
 end
 
-def employee_verify
+def project_verify
 end
 
 #these methods are to test and convert user entries

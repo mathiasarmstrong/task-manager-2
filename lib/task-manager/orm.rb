@@ -104,8 +104,8 @@ module TM
 
     def list_employees_by_project( pid )
       command = <<-SQL
-        SELECT *
-        FROM employeess e
+        SELECT e.id, e.name
+        FROM employees e
         JOIN join_table ep
         ON e.id = ep.employee_id
         JOIN projects p
@@ -167,7 +167,7 @@ module TM
 
     def list_projects_by_employee( eid )
       command = <<-SQL
-        SELECT *
+        SELECT p.id, p.name
         FROM projects p
         JOIN join_table ep
         ON p.id = ep.project_id
